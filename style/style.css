@@ -1,0 +1,39 @@
+header {
+  height: 80px;
+  background: lightgray;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 40px;
+}
+
+.cart-button {
+  padding: 5px 15px;
+  border: 0;
+  border-radius: 16px;
+  background: brown;
+  color: white;
+  font-size: 16px;
+}
+
+.cart-button:hover {
+  transform: scale(1.5);
+}
+
+.goods-list {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.goods-item {
+  margin: 20px;
+  border: 1px solid black;
+  border-radius: 16px;
+  padding: 10px 25px;
+}
+
+.goods-item p {
+  color: brown;
+}
+
