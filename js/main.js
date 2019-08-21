@@ -1,49 +1,61 @@
 //заглушки (имитация базы данных)
-const image = 'https://placehold.it/200x150';
-const cartImage = 'https://placehold.it/100x80';
-const items = ['Notebook', 'Display', 'Keyboard', 'Mouse', 'Phones', 'Router', 'USB-camera', 'Gamepad'];
-const prices = [1000, 200, 20, 10, 25, 30, 18, 24];
-const ids = [1, 2, 3, 4, 5, 6, 7, 8];
+const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses/';
 
 
-//создание массива объектов - имитация загрузки данных с сервера
-function fetchData() {
-    let arr = [];
-    for (let i = 0; i < items.length; i++) {
-        arr.push({
-            title: items[i],
-            price: prices[i],
-            img: image
-        });
-    }
-    return arr
-};
-
-class ProductsList {
+class GoodsList  {
     constructor() {
-        this.products = [];
+        this.goods = [];
         this._init()
     }
 
     _init() {
-        this.fetchProduct();
+        this.fetchGoods();
         this.render();
     }
 
-    render() {
-        const block = document.querySelector('.products');
-        this.products.forEach(product => {
-            let prod = new Product(product);
-            block.insertAdjacentHTML("beforeend", prod.render());
+    fetchGoods(cb) {
+        cb();
+        makeGETRequest(`${API_URL}/catalogData.json`, (goods) => {
+            this.goods = JSON.parse(goods);
+
         })
     }
 
-    fetchProduct() {
-        this.products = fetchData();
+    render() {
+        let listHtml = '';
+        this.goods.forEach(good => {
+            const goodItem = new GoodsItem(good.product_name, good.price);
+            listHtml += goodItem.render();
+        });
+        document.querySelector('.products').innerHTML = listHtml;
     }
 }
+const list = new GoodsList();
+list.fetchGoods(() => {
+    list.render();
+});
 
-class Product {
+function makeGETRequest(url, callback) {
+    var xhr;
+
+    if (window.XMLHttpRequest) {
+        xhr = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            callback(xhr.responseText);
+        }
+    };
+
+    xhr.open('GET', url, true);
+    xhr.send();
+}
+
+
+class GoodsItem  {
     constructor(product) {
         this.title = product.title;
         this.price = product.price;
@@ -51,22 +63,14 @@ class Product {
     }
 
     render() {
-        return `<div class="product-item">
-                        <img src="${this.img}" alt="Some img">
-                        <div class="desc">
-                            <h3>${this.title}</h3>
-                            <p>${this.price} $</p>
-                            <button class="buy-btn" 
-                            data-name="${this.title}"
-                            data-image="${this.img}"
-                            data-price="${this.price}">Купить</button>
-                        </div>
-                    </div>`
+        return `<div class="goods-item"><h3>${this.product_name}</h3><p>${this.price}</p></div>`;
     }
 }
 
 
-const catalog = new ProductsList();
+
+
+const catalog = new GoodsList();
 
 class Cart {
 
